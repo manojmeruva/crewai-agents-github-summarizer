@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generated GitHub Documentation</title>
+</head>
+<body>
+    <h1>Generated Documentation</h1>
+
+    {% if documentation %}
+    <div style="max-width: 800px; line-height: 1.6; font-family: sans-serif;">
+        {{ documentation|safe }}
+    </div>    
+    {% else %}
+        <p>No documentation generated yet.</p>
+    {% endif %}
+
+    <hr>
+    <p><a href="{% url 'documentation_interface' %}">Generate Documentation for Another Repository</a></p>
+</body>
+</html>

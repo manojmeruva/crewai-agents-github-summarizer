@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub MCP Server Interface</title>
+</head>
+<body>
+    <h1>Interact with GitHub MCP Server</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'run_mcp_command' %}">
+        {% csrf_token %}
+        <div>
+            <label for="command">Command:</label>
+            <input type="text" id="command" name="command" value="get_issue">
+            <small>e.g., get_issue, list_issues, get_me, ping</small>
+        </div>
+        <div>
+            <label for="owner">Owner:</label>
+            <input type="text" id="owner" name="owner" value="octocat">
+        </div>
+        <div>
+            <label for="repo">Repository:</label>
+            <input type="text" id="repo" name="repo" value="Spoon-Knife">
+        </div>
+        <div>
+            <label for="issue_number">Issue Number:</label>
+            <input type="number" id="issue_number" name="issue_number" value="1">
+        </div>
+        <button type="submit">Send Command</button>
+    </form>
+
+    {% if output %}
+        <h2>Output:</h2>
+        <pre>{{ output }}</pre>
+    {% endif %}
+</body>
+</html>
