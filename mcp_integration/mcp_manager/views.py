@@ -83,7 +83,7 @@ def generate_documentation(request):
                         return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
 
                     llm = ChatGoogleGenerativeAI(
-                        model="gemma-4-31b-it",
+                        model="gemma-4-26b-a4b-it",
                         google_api_key=os.getenv("GOOGLE_API_KEY"),
                     )
                     crew = build_crew(owner, repo_name)

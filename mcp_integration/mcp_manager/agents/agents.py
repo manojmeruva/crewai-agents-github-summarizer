@@ -4,9 +4,10 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from ..tools.directory_scanner import get_repo_files
 from ..tools.issue_retriever import get_issue
 from ..tools.pull_request_lister import get_pull_requests
+from ..tools.branch_lister import get_repo_branches
 
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-31b-it",
+    model="gemma-4-26b-a4b-it",
     google_api_key=os.getenv("GOOGLE_API_KEY"),
 )
 
@@ -32,6 +33,7 @@ issue_analyst = Agent(
         "You know how to summarize them effectively and highlight the ones that need urgent attention."
     ),
     tools = [get_issue],
+    llm=llm,
     verbose = True
 )
 
@@ -41,5 +43,16 @@ pull_requests_fetcher_reporter = Agent(
     goal = "Fetch and provide a list of 5 most recently created pull requests from a GitHub repository.",
     backstory = "You are an expert in retrieving information about GitHub issues using the MCP server. You also concisely summarize open issues as categories and provide a comprehensive and readable report",
     tools = [get_pull_requests],
+    llm=llm,
+    verbose = True
+)
+
+## Branch Lister
+repo_branch_reporter = Agent(
+    role = "Repository Branch Reportor",
+    goal = "Fetch and provide a list of 5 branches in a GitHub repository.",
+    backstory = "You are an expert in retrieving information about GitHub issues using the MCP server. You also concisely summarize branch as categories and provide a comprehensive and readable report",
+    tools = [get_repo_branches],
+    llm=llm,
     verbose = True
 )

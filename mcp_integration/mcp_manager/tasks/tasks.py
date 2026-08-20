@@ -1,8 +1,9 @@
 from crewai import Task
-from ..agents.agents import repo_structure_auditor, issue_analyst, pull_requests_fetcher_reporter
+from ..agents.agents import repo_structure_auditor, issue_analyst, pull_requests_fetcher_reporter, repo_branch_reporter
 from ..tools.directory_scanner import get_repo_files
 from ..tools.issue_retriever import get_issue
 from ..tools.pull_request_lister import get_pull_requests
+from ..tools.branch_lister import get_repo_branches
 
 
 
@@ -61,3 +62,15 @@ def list_pull_requests_tasks(owner: str, repo: str):
         verbose = True
     )
     return [fetch_pull_request_task] 
+
+def list_branches_tasks(owner: str, repo: str):
+    list_branches_task = Task(
+        description = f"Fetch a list of 5 branches created from the {owner}/{repo} repository using the 'get_repo_branches' tool. Analyze the provided lists to identify key themes, active discussions, and potential areas of focus.",
+        expected_output = f"A Markdown-formatted summary of the repository's branches. Provide a concise and categorical summary of the requests and your feedback for it.",
+        agent = repo_branch_reporter,
+        tools = [get_repo_branches],
+        output_file = "/generated_docs/branches.md",
+        create_directory = True,
+        verbose = True
+    )
+    return [list_branches_task]
