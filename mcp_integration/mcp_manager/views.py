@@ -6,14 +6,14 @@ from django.shortcuts import render
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from .crews.crew import build_crew
 
-# Task 11: Import the generate_documentation function
 
 
 
 GITHUB_TOKEN = getattr(settings, 'GITHUB_PERSONAL_ACCESS_TOKEN', None)
-OPENAI_API_KEY = getattr(settings, 'OPENAI_API_KEY', None)
+GOOGLE_API_KEY = getattr(settings, 'GOOGLE_API_KEY', None)
 
 # The utility function that extracts owner and repo from a GitHub URL
 def extract_owner_repo(repo_url):
@@ -66,20 +66,59 @@ def convert_markdown_to_html(markdown_file_path):
         return None
 
 
-# Task 4: Write the function to render the documentation interface
+
 def documentation_interface(request):
     return render(request, 'mcp_manager/documentation_interface.html')
 
 
-# Task 11: Define the generate_documentation() function
+def generate_documentation(request):
+    if request.method == 'POST':
+        repo_url = request.POST.get('repo_url', '')
+        if repo_url:
+            try:
+                owner, repo_name = extract_owner_repo(repo_url)
+                if owner and repo_name:
+                    if not GOOGLE_API_KEY:
+                        error = "Error: GOOGLE_API_KEY is not set in Django settings."
+                        return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
 
+                    llm = ChatGoogleGenerativeAI(
+                        model="gemma-4-31b-it",
+                        google_api_key=os.getenv("GOOGLE_API_KEY"),
+                    )
+                    crew = build_crew(owner, repo_name)
+                    crew.kickoff()
 
+                    output_files = [
+                        "/usercode/mcp_integration/generated_docs/repo_structure.md",
+                        "/usercode/mcp_integration/generated_docs/report_issues.md",
+                        "/usercode/mcp_integration/generated_docs/pull_requests.md",
+                        "/usercode/mcp_integration/generated_docs/branches.md"
+                    ]
+                    final_output_path = "/usercode/mcp_integration/generated_docs/summary.md"
+                    combined_markdown_path = combine_markdown_files(output_files, final_output_path, owner, repo_name)
 
+                    if combined_markdown_path:
+                        html_content = convert_markdown_to_html(combined_markdown_path)
+                        if html_content:
+                            return render(request, 'mcp_manager/documentation_display.html', {
+                                'documentation': html_content
+                            })
+                        else:
+                            error = "Failed to convert combined Markdown to HTML."
+                            return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
+                    else:
+                        error = "Failed to combine the documentation files."
+                        return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
+                else:
+                    error = "Invalid GitHub repository URL."
+                    return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
 
+            except ValueError as e:
+                error = str(e)
+                return render(request, 'mcp_manager/documentation_interface.html', {'error': error})
 
-
-
-
+    return render(request, 'mcp_manager/documentation_interface.html')
 
 
 

@@ -1,4 +1,4 @@
-<!-- Task 3: Build the User Interface -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,7 +93,7 @@
         <p style="color: red;">{{ error }}</p>
     {% endif %}
 
-    <form method="post" action="{}">
+    <form method="post" action="{% url 'generate_documentation' %}">
         {% csrf_token %}
         <div>
             <label for="repo_url">GitHub Repository URL:</label>

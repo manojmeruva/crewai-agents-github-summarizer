@@ -18,8 +18,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-# Task 4: Add your application's URLconf 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('mcp_manager.urls')),
+    
 ]
