@@ -89,13 +89,14 @@ def generate_documentation(request):
                     crew = build_crew(owner, repo_name)
                     crew.kickoff()
 
+                    generated_docs_dir = os.path.join(settings.BASE_DIR, "generated_docs")
                     output_files = [
-                        "/usercode/mcp_integration/generated_docs/repo_structure.md",
-                        "/usercode/mcp_integration/generated_docs/report_issues.md",
-                        "/usercode/mcp_integration/generated_docs/pull_requests.md",
-                        "/usercode/mcp_integration/generated_docs/branches.md"
+                        os.path.join(generated_docs_dir, "repo_structure.md"),
+                        os.path.join(generated_docs_dir, "report_issues.md"),
+                        os.path.join(generated_docs_dir, "pull_requests.md"),
+                        os.path.join(generated_docs_dir, "branches.md"),
                     ]
-                    final_output_path = "/usercode/mcp_integration/generated_docs/summary.md"
+                    final_output_path = os.path.join(generated_docs_dir, "summary.md")
                     combined_markdown_path = combine_markdown_files(output_files, final_output_path, owner, repo_name)
 
                     if combined_markdown_path:

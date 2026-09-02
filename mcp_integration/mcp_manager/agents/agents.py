@@ -7,7 +7,7 @@ from ..tools.pull_request_lister import get_pull_requests
 from ..tools.branch_lister import get_repo_branches
 
 llm = ChatGoogleGenerativeAI(
-    model="gemma-4-26b-a4b-it",
+    model="gemini-2.5-flash",
     google_api_key=os.getenv("GOOGLE_API_KEY"),
 )
 
