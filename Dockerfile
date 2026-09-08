@@ -1,7 +1,10 @@
 # --- Stage 1: build github-mcp-server and mcpcurl from source ---
 FROM golang:1.25-bookworm AS mcp-builder
 
-RUN git clone --depth 1 https://github.com/github/github-mcp-server.git /src/github-mcp-server
+# Pinned: later versions moved owner/repo from CLI flags to MCP headers
+# ("x-mcp-header"), and changed list_issues to cursor pagination (--after
+# instead of --page), which breaks the flags mcp_manager/tools/*.py pass.
+RUN git clone --depth 1 --branch v0.5.0 https://github.com/github/github-mcp-server.git /src/github-mcp-server
 
 WORKDIR /src/github-mcp-server
 RUN go build -o /out/github-mcp-server ./cmd/github-mcp-server

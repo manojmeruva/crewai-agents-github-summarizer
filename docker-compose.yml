@@ -6,5 +6,5 @@ services:
     env_file:
       - .env
     volumes:
+      # Generated reports are written here so they survive container restarts.
       - ./mcp_integration/generated_docs:/app/mcp_integration/generated_docs
-      - ./mcp_integration/db.sqlite3:/app/mcp_integration/db.sqlite3

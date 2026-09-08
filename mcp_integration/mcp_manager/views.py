@@ -51,11 +51,26 @@ def combine_markdown_files(file_paths, output_path, owner, repo_name):
 
 import markdown
 
+def _normalize_list_indentation(markdown_text):
+    """Double leading indentation so nested lists survive conversion.
+
+    The agents emit file trees indented two spaces per level, but
+    Python-Markdown needs four to treat an item as nested. Without this the
+    whole tree collapses to a single flat level.
+    """
+    lines = []
+    for line in markdown_text.splitlines():
+        stripped = line.lstrip(" ")
+        indent = len(line) - len(stripped)
+        lines.append(" " * (indent * 2) + stripped if stripped else line)
+    return "\n".join(lines)
+
+
 # The utility function to change markdown to HTML
 def convert_markdown_to_html(markdown_file_path):
     try:
         with open(markdown_file_path, "r") as f:
-            markdown_text = f.read()
+            markdown_text = _normalize_list_indentation(f.read())
             html_content = markdown.markdown(markdown_text, extensions=['extra'])
             return html_content
     except FileNotFoundError:

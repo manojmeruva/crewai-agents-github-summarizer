@@ -1,106 +1,401 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate GitHub Documentation</title>
     <style>
+        :root {
+            --canvas-default: #0d1117;
+            --canvas-subtle: #161b22;
+            --canvas-inset: #010409;
+            --border-default: #30363d;
+            --border-muted: #21262d;
+            --fg-default: #e6edf3;
+            --fg-muted: #7d8590;
+            --fg-subtle: #6e7681;
+            --accent-fg: #2f81f7;
+            --accent-emphasis: #1f6feb;
+            --success-fg: #3fb950;
+            --success-emphasis: #238636;
+            --done-fg: #a371f7;
+            --attention-fg: #d29922;
+            --danger-fg: #f85149;
+            --danger-subtle: rgba(248, 81, 73, 0.1);
+            --neutral-muted: rgba(110, 118, 129, 0.4);
+            --radius: 6px;
+            --radius-lg: 12px;
+        }
+
+        :root[data-theme="light"] {
+            --canvas-default: #ffffff;
+            --canvas-subtle: #f6f8fa;
+            --canvas-inset: #f6f8fa;
+            --border-default: #d1d9e0;
+            --border-muted: #d8dee4;
+            --fg-default: #1f2328;
+            --fg-muted: #59636e;
+            --fg-subtle: #6e7781;
+            --accent-fg: #0969da;
+            --accent-emphasis: #0969da;
+            --success-fg: #1a7f37;
+            --success-emphasis: #1f883d;
+            --done-fg: #8250df;
+            --attention-fg: #9a6700;
+            --danger-fg: #d1242f;
+            --danger-subtle: rgba(255, 235, 233, 1);
+            --neutral-muted: rgba(175, 184, 193, 0.2);
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 2em;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            min-height: 100vh;
+            background-color: var(--canvas-default);
+            color: var(--fg-default);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+                         Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 1.5em;
+        .app-header {
+            background-color: var(--canvas-inset);
+            border-bottom: 1px solid var(--border-default);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
+        :root[data-theme="light"] .app-header { background-color: var(--canvas-default); }
+        .app-header .mark { color: var(--fg-default); display: flex; }
+        .header-title { font-size: 14px; font-weight: 600; }
+        .header-actions { margin-left: auto; }
 
-        p[style="color: red;"] {
-            color: #dc3545 !important;
-            margin-bottom: 1em;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 1.5em;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        div {
-            margin-bottom: 1em;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5em;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="url"] {
-            width: calc(100% - 12px);
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button[type="submit"] {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-default);
+            background-color: var(--canvas-subtle);
+            color: var(--fg-default);
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #218838;
-        }
-
-        hr {
-            border: 1px solid #ddd;
-            margin: 2em 0;
-        }
-
-        p a {
-            color: #007bff;
             text-decoration: none;
+            font-family: inherit;
+            transition: background-color .15s ease, border-color .15s ease;
+        }
+        .btn:hover { background-color: var(--border-muted); border-color: var(--fg-subtle); }
+        .btn-icon { padding: 5px 8px; }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
         }
 
-        p a:hover {
-            text-decoration: underline;
+        .card {
+            width: 100%;
+            max-width: 544px;
+            background-color: var(--canvas-default);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 24px 0;
+            text-align: center;
+        }
+        .card-header .glyph {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background-color: var(--canvas-subtle);
+            border: 1px solid var(--border-default);
+            color: var(--accent-fg);
+            margin-bottom: 16px;
+        }
+        .card-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+        .card-description { color: var(--fg-muted); margin: 0; font-size: 14px; }
+
+        .card-body { padding: 24px; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper .prefix-icon {
+            position: absolute;
+            left: 12px;
+            color: var(--fg-subtle);
+            display: flex;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 20px;
+            color: var(--fg-default);
+            background-color: var(--canvas-inset);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        :root[data-theme="light"] .form-input { background-color: var(--canvas-default); }
+        .form-input::placeholder { color: var(--fg-subtle); }
+        .form-input:focus {
+            border-color: var(--accent-emphasis);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.3);
+        }
+
+        .form-hint { margin: 6px 0 0; font-size: 12px; color: var(--fg-muted); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: var(--success-emphasis);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color .15s ease;
+        }
+        .btn-submit:hover:not(:disabled) { background-color: #2ea043; }
+        .btn-submit:disabled { opacity: .7; cursor: not-allowed; }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .flash {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--danger-fg);
+            background-color: var(--danger-subtle);
+            border-radius: var(--radius);
+            color: var(--fg-default);
+            font-size: 14px;
+        }
+        .flash svg { color: var(--danger-fg); flex-shrink: 0; margin-top: 2px; }
+
+        /* Agent preview strip */
+        .agents {
+            border-top: 1px solid var(--border-muted);
+            padding: 16px 24px;
+            background-color: var(--canvas-subtle);
+        }
+        .agents-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--fg-muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin: 0 0 12px;
+        }
+        .agent-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .agent {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius);
+            background-color: var(--canvas-default);
+            font-size: 12px;
+            color: var(--fg-muted);
+        }
+        .agent .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dot-structure { background-color: var(--accent-fg); }
+        .dot-issues    { background-color: var(--success-fg); }
+        .dot-pulls     { background-color: var(--done-fg); }
+        .dot-branches  { background-color: var(--attention-fg); }
+
+        .note {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-default);
+            background-color: var(--canvas-subtle);
+            color: var(--fg-muted);
+            font-size: 12px;
+        }
+        .note svg { flex-shrink: 0; margin-top: 1px; color: var(--attention-fg); }
+
+        .app-footer {
+            border-top: 1px solid var(--border-muted);
+            padding: 24px;
+            text-align: center;
+            color: var(--fg-muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .main { padding: 24px 16px; }
+            .agent-list { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <h1>Generate Documentation for a GitHub Repository</h1>
-
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-
-    <form method="post" action="{% url 'generate_documentation' %}">
-        {% csrf_token %}
-        <div>
-            <label for="repo_url">GitHub Repository URL:</label>
-            <input type="url" id="repo_url" name="repo_url" size="60" placeholder="e.g., https://github.com/owner/repo">
+    <header class="app-header">
+        <span class="mark">
+            <svg height="28" viewBox="0 0 16 16" width="28" fill="currentColor" aria-hidden="true">
+                <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
+            </svg>
+        </span>
+        <div class="header-title">Repository Documentation</div>
+        <div class="header-actions">
+            <button class="btn btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+                <svg id="theme-icon" height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Z"></path>
+                </svg>
+            </button>
         </div>
-        <button type="submit">Generate Documentation</button>
-    </form>
-    <hr>
+    </header>
+
+    <main class="main">
+        <div class="card">
+            <div class="card-header">
+                <span class="glyph">
+                    <svg height="28" width="28" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
+                    </svg>
+                </span>
+                <h1 class="card-title">Generate documentation</h1>
+                <p class="card-description">Analyze a public GitHub repository with AI agents.</p>
+            </div>
+
+            <div class="card-body">
+                {% if error %}
+                <div class="flash" role="alert">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+                    </svg>
+                    <span>{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'generate_documentation' %}" id="gen-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label" for="repo_url">Repository URL</label>
+                        <div class="input-wrapper">
+                            <span class="prefix-icon">
+                                <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"></path>
+                                </svg>
+                            </span>
+                            <input class="form-input" type="url" id="repo_url" name="repo_url"
+                                   placeholder="https://github.com/owner/repository" required>
+                        </div>
+                        <p class="form-hint">Public repositories on github.com.</p>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <span class="spinner" id="spinner"></span>
+                        <span id="btn-label">Generate documentation</span>
+                    </button>
+                </form>
+
+                <div class="note">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path>
+                    </svg>
+                    <span>Analysis runs four agents sequentially and typically takes 30&ndash;120 seconds.</span>
+                </div>
+            </div>
+
+            <div class="agents">
+                <p class="agents-label">Agents</p>
+                <div class="agent-list">
+                    <div class="agent"><span class="dot dot-structure"></span> Structure Auditor</div>
+                    <div class="agent"><span class="dot dot-issues"></span> Issue Analyst</div>
+                    <div class="agent"><span class="dot dot-pulls"></span> Pull Request Lister</div>
+                    <div class="agent"><span class="dot dot-branches"></span> Branch Reporter</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        Powered by CrewAI agents and the GitHub MCP Server
+    </footer>
+
+    <script>
+    (function () {
+        var root = document.documentElement;
+        var SUN = 'M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.657-8.157a.75.75 0 0 1 0 1.061l-1.061 1.06a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.193 9.193a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0ZM3 8a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 3 8Zm13 0a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 16 8Zm-8 5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 8 13Zm-5.657-.343a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 0 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.06Zm9.193-9.193a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061l-1.061-1.06a.75.75 0 0 1 0-1.061Z';
+        var MOON = 'M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Z';
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            var icon = document.getElementById('theme-icon');
+            if (icon) icon.innerHTML = '<path d="' + (theme === 'dark' ? MOON : SUN) + '"></path>';
+            try { localStorage.setItem('docs-theme', theme); } catch (e) {}
+        }
+
+        var stored = null;
+        try { stored = localStorage.getItem('docs-theme'); } catch (e) {}
+        applyTheme(stored || 'dark');
+
+        var toggle = document.getElementById('theme-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            });
+        }
+
+        // Loading state: the request legitimately takes 30-120s.
+        var form = document.getElementById('gen-form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('spinner').style.display = 'block';
+                document.getElementById('btn-label').textContent = 'Analyzing repository…';
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

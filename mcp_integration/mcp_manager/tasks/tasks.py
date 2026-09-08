@@ -1,5 +1,4 @@
 import os
-from django.conf import settings
 from crewai import Task
 from ..agents.agents import repo_structure_auditor, issue_analyst, pull_requests_fetcher_reporter, repo_branch_reporter
 from ..tools.directory_scanner import get_repo_files
@@ -7,7 +6,11 @@ from ..tools.issue_retriever import get_issue
 from ..tools.pull_request_lister import get_pull_requests
 from ..tools.branch_lister import get_repo_branches
 
-GENERATED_DOCS_DIR = os.path.join(settings.BASE_DIR, "generated_docs")
+# crewai strips a leading "/" from output_file and resolves what is left
+# against the process working directory (which is BASE_DIR), so an absolute
+# path here would be written to BASE_DIR/<BASE_DIR>/... instead. Keep these
+# task paths relative; views.py resolves the same files under BASE_DIR.
+GENERATED_DOCS_DIR = "generated_docs"
 
 
 

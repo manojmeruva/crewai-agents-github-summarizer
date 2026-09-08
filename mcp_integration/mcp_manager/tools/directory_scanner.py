@@ -1,6 +1,6 @@
 from langchain_core.tools import StructuredTool
 from mcp_manager.utils import mcp_tool
-def list_repo_files(owner: str, repo: str, path: str = ".") -> list:
+def list_repo_files(owner: str, repo: str, path: str = "/") -> list:
     """
     List files and folders at a given path in a GitHub repository.
     """
