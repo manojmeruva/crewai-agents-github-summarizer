@@ -3,48 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate GitHub Documentation</title>
+    <title>Repo Insight</title>
     <style>
         :root {
-            --canvas-default: #0d1117;
-            --canvas-subtle: #161b22;
-            --canvas-inset: #010409;
-            --border-default: #30363d;
-            --border-muted: #21262d;
-            --fg-default: #e6edf3;
-            --fg-muted: #7d8590;
-            --fg-subtle: #6e7681;
-            --accent-fg: #2f81f7;
-            --accent-emphasis: #1f6feb;
-            --success-fg: #3fb950;
-            --success-emphasis: #238636;
-            --done-fg: #a371f7;
-            --attention-fg: #d29922;
-            --danger-fg: #f85149;
-            --danger-subtle: rgba(248, 81, 73, 0.1);
-            --neutral-muted: rgba(110, 118, 129, 0.4);
-            --radius: 6px;
-            --radius-lg: 12px;
+            --canvas-default: #121018;
+            --canvas-subtle: #1a1725;
+            --canvas-inset: #0b0a10;
+            --border-default: #2e293e;
+            --border-muted: #221f2d;
+            --fg-default: #ece9f5;
+            --fg-muted: #9791ac;
+            --fg-subtle: #706a85;
+            --accent: #8b7bf7;
+            --accent-strong: #6d5bea;
+            --accent-soft: rgba(139, 123, 247, 0.15);
+            --ok: #4fd1a5;
+            --ok-strong: #2fb98a;
+            --pending-color: #f0b955;
+            --danger: #f16d8a;
+            --danger-subtle: rgba(241, 109, 138, 0.12);
+            --neutral-muted: rgba(151, 145, 172, 0.16);
+            --radius: 10px;
+            --radius-lg: 20px;
+            --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 24px -8px rgba(139, 123, 247, 0.35);
         }
 
         :root[data-theme="light"] {
             --canvas-default: #ffffff;
-            --canvas-subtle: #f6f8fa;
-            --canvas-inset: #f6f8fa;
-            --border-default: #d1d9e0;
-            --border-muted: #d8dee4;
-            --fg-default: #1f2328;
-            --fg-muted: #59636e;
-            --fg-subtle: #6e7781;
-            --accent-fg: #0969da;
-            --accent-emphasis: #0969da;
-            --success-fg: #1a7f37;
-            --success-emphasis: #1f883d;
-            --done-fg: #8250df;
-            --attention-fg: #9a6700;
-            --danger-fg: #d1242f;
-            --danger-subtle: rgba(255, 235, 233, 1);
-            --neutral-muted: rgba(175, 184, 193, 0.2);
+            --canvas-subtle: #f5f3fb;
+            --canvas-inset: #efecf9;
+            --border-default: #ddd7ef;
+            --border-muted: #e6e1f4;
+            --fg-default: #201c30;
+            --fg-muted: #6b6480;
+            --fg-subtle: #8b8499;
+            --accent: #6d5bea;
+            --accent-strong: #5843d6;
+            --accent-soft: rgba(109, 91, 234, 0.1);
+            --ok: #1f9d74;
+            --ok-strong: #17835f;
+            --pending-color: #b8791a;
+            --danger: #d94566;
+            --danger-subtle: rgba(217, 69, 102, 0.08);
+            --neutral-muted: rgba(139, 132, 153, 0.12);
+            --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 24px -8px rgba(109, 91, 234, 0.25);
         }
 
         * { box-sizing: border-box; }
@@ -54,10 +56,10 @@
             min-height: 100vh;
             background-color: var(--canvas-default);
             color: var(--fg-default);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
-                         Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-            font-size: 14px;
-            line-height: 1.5;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Noto Sans",
+                         Helvetica, Arial, sans-serif;
+            font-size: 14.5px;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             display: flex;
             flex-direction: column;
@@ -65,25 +67,36 @@
 
         .app-header {
             background-color: var(--canvas-inset);
-            border-bottom: 1px solid var(--border-default);
-            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-muted);
+            padding: 16px 28px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
-        :root[data-theme="light"] .app-header { background-color: var(--canvas-default); }
-        .app-header .mark { color: var(--fg-default); display: flex; }
-        .header-title { font-size: 14px; font-weight: 600; }
-        .header-actions { margin-left: auto; }
+        .app-header .mark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; height: 30px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .header-title { font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+        .header-actions { margin-left: auto; display: flex; gap: 8px; }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 5px 12px;
-            font-size: 12px;
-            font-weight: 500;
+            padding: 6px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
             line-height: 20px;
             border-radius: var(--radius);
             border: 1px solid var(--border-default);
@@ -92,60 +105,64 @@
             cursor: pointer;
             text-decoration: none;
             font-family: inherit;
-            transition: background-color .15s ease, border-color .15s ease;
+            transition: background-color .15s ease, border-color .15s ease, transform .1s ease;
         }
         .btn:hover { background-color: var(--border-muted); border-color: var(--fg-subtle); }
-        .btn-icon { padding: 5px 8px; }
+        .btn:active { transform: scale(0.97); }
+        .btn-icon { padding: 6px 9px; }
 
         .main {
             flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 48px 24px;
+            padding: 56px 24px;
         }
 
+        /* ---------------- Form card ---------------- */
         .card {
             width: 100%;
-            max-width: 544px;
+            max-width: 560px;
             background-color: var(--canvas-default);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-lg);
             overflow: hidden;
+            box-shadow: var(--shadow-glow);
         }
 
         .card-header {
-            padding: 24px 24px 0;
+            padding: 32px 28px 0;
             text-align: center;
         }
         .card-header .glyph {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background-color: var(--canvas-subtle);
+            width: 60px; height: 60px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--accent-soft), transparent);
             border: 1px solid var(--border-default);
-            color: var(--accent-fg);
-            margin-bottom: 16px;
+            color: var(--accent);
+            margin-bottom: 18px;
         }
-        .card-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+        .card-title { font-size: 22px; font-weight: 700; margin: 0 0 6px; letter-spacing: -.02em; }
         .card-description { color: var(--fg-muted); margin: 0; font-size: 14px; }
 
-        .card-body { padding: 24px; }
+        .card-body { padding: 28px; }
 
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 18px; }
         .form-label {
             display: block;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
+            color: var(--fg-muted);
         }
 
         .input-wrapper { position: relative; display: flex; align-items: center; }
         .input-wrapper .prefix-icon {
             position: absolute;
-            left: 12px;
+            left: 14px;
             color: var(--fg-subtle);
             display: flex;
             pointer-events: none;
@@ -153,7 +170,7 @@
 
         .form-input {
             width: 100%;
-            padding: 8px 12px 8px 36px;
+            padding: 11px 14px 11px 40px;
             font-size: 14px;
             font-family: inherit;
             line-height: 20px;
@@ -164,23 +181,22 @@
             outline: none;
             transition: border-color .15s ease, box-shadow .15s ease;
         }
-        :root[data-theme="light"] .form-input { background-color: var(--canvas-default); }
         .form-input::placeholder { color: var(--fg-subtle); }
         .form-input:focus {
-            border-color: var(--accent-emphasis);
-            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.3);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-soft);
         }
 
-        .form-hint { margin: 6px 0 0; font-size: 12px; color: var(--fg-muted); }
+        .form-hint { margin: 7px 0 0; font-size: 12px; color: var(--fg-subtle); }
 
         .btn-submit {
             width: 100%;
-            padding: 10px 16px;
+            padding: 12px 16px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             color: #ffffff;
-            background-color: var(--success-emphasis);
-            border: 1px solid rgba(240, 246, 252, 0.1);
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            border: none;
             border-radius: var(--radius);
             cursor: pointer;
             font-family: inherit;
@@ -188,14 +204,15 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background-color .15s ease;
+            transition: filter .15s ease, transform .1s ease;
         }
-        .btn-submit:hover:not(:disabled) { background-color: #2ea043; }
+        .btn-submit:hover:not(:disabled) { filter: brightness(1.08); }
+        .btn-submit:active:not(:disabled) { transform: scale(0.99); }
         .btn-submit:disabled { opacity: .7; cursor: not-allowed; }
 
         .spinner {
             width: 16px; height: 16px;
-            border: 2px solid rgba(255,255,255,.3);
+            border: 2px solid rgba(255,255,255,.35);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin .7s linear infinite;
@@ -209,26 +226,25 @@
             gap: 8px;
             padding: 12px 16px;
             margin-bottom: 16px;
-            border: 1px solid var(--danger-fg);
+            border: 1px solid var(--danger);
             background-color: var(--danger-subtle);
             border-radius: var(--radius);
             color: var(--fg-default);
-            font-size: 14px;
+            font-size: 13.5px;
         }
-        .flash svg { color: var(--danger-fg); flex-shrink: 0; margin-top: 2px; }
+        .flash svg { color: var(--danger); flex-shrink: 0; margin-top: 2px; }
 
-        /* Agent preview strip */
         .agents {
             border-top: 1px solid var(--border-muted);
-            padding: 16px 24px;
+            padding: 18px 28px;
             background-color: var(--canvas-subtle);
         }
         .agents-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--fg-muted);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--fg-subtle);
             text-transform: uppercase;
-            letter-spacing: .5px;
+            letter-spacing: .06em;
             margin: 0 0 12px;
         }
         .agent-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -236,94 +252,344 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 10px;
+            padding: 9px 11px;
             border: 1px solid var(--border-default);
             border-radius: var(--radius);
             background-color: var(--canvas-default);
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--fg-muted);
         }
         .agent .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .dot-structure { background-color: var(--accent-fg); }
-        .dot-issues    { background-color: var(--success-fg); }
-        .dot-pulls     { background-color: var(--done-fg); }
-        .dot-branches  { background-color: var(--attention-fg); }
+        .dot-structure { background-color: var(--accent); }
+        .dot-issues    { background-color: var(--ok); }
+        .dot-pulls     { background-color: #ef8ed0; }
+        .dot-branches  { background-color: var(--pending-color); }
 
         .note {
             display: flex;
             gap: 8px;
             align-items: flex-start;
-            margin-top: 16px;
-            padding: 12px;
+            margin-top: 18px;
+            padding: 12px 14px;
             border-radius: var(--radius);
             border: 1px solid var(--border-default);
             background-color: var(--canvas-subtle);
             color: var(--fg-muted);
             font-size: 12px;
         }
-        .note svg { flex-shrink: 0; margin-top: 1px; color: var(--attention-fg); }
+        .note svg { flex-shrink: 0; margin-top: 1px; color: var(--pending-color); }
+
+        /* ---------------- Progress view ---------------- */
+        .progress-card {
+            width: 100%;
+            max-width: 560px;
+            background-color: var(--canvas-default);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-glow);
+            padding: 32px 28px;
+        }
+        .progress-head { text-align: center; margin-bottom: 28px; }
+        .progress-head h2 { font-size: 19px; font-weight: 700; margin: 0 0 6px; letter-spacing: -.01em; }
+        .progress-head p { margin: 0; color: var(--fg-muted); font-size: 13.5px; }
+        .progress-head .repo-tag {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .steps { display: flex; flex-direction: column; gap: 4px; }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 14px;
+            border-radius: var(--radius);
+            transition: background-color .2s ease;
+        }
+        .step.is-running { background-color: var(--accent-soft); }
+        .step-icon {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid var(--border-default);
+            color: var(--fg-subtle);
+            position: relative;
+        }
+        .step.is-done .step-icon {
+            border-color: var(--ok);
+            background-color: var(--ok);
+            color: #fff;
+        }
+        .step.is-running .step-icon {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .step.is-running .step-icon::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--accent);
+            animation: spin 0.9s linear infinite;
+        }
+        .step-label { font-size: 14px; font-weight: 500; color: var(--fg-muted); }
+        .step.is-running .step-label,
+        .step.is-done .step-label { color: var(--fg-default); }
+        .step-status {
+            margin-left: auto;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--fg-subtle);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .step.is-running .step-status { color: var(--accent); }
+        .step.is-done .step-status { color: var(--ok); }
+
+        .progress-error {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--danger);
+            background-color: var(--danger-subtle);
+            font-size: 13.5px;
+        }
+        .progress-error .btn { margin-top: 12px; }
+
+        /* ---------------- Results view ---------------- */
+        .results-wrap { width: 100%; max-width: 1000px; }
+
+        .repo-hero {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-muted);
+        }
+        .repo-hero .repo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-soft), transparent);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        .repo-name { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+        .repo-name a { color: var(--fg-default); text-decoration: none; }
+        .repo-name a:hover { color: var(--accent); }
+        .repo-meta {
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--fg-subtle);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tabbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 4px;
+            background-color: var(--canvas-subtle);
+            border: 1px solid var(--border-default);
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--fg-muted);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color .15s ease, color .15s ease;
+        }
+        .tab:hover { color: var(--fg-default); }
+        .tab.active {
+            background-color: var(--canvas-default);
+            color: var(--fg-default);
+            box-shadow: 0 2px 8px -2px rgba(0,0,0,0.2);
+        }
+        .tab .tab-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+        .panel {
+            background-color: var(--canvas-default);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .panel[hidden] { display: none; }
+
+        .md h1, .md h2, .md h3 {
+            font-weight: 700;
+            line-height: 1.3;
+            margin-top: 26px;
+            margin-bottom: 12px;
+            letter-spacing: -.01em;
+        }
+        .md > :first-child { margin-top: 0; }
+        .md h1 { font-size: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border-muted); }
+        .md h2 { font-size: 15px; padding-bottom: 6px; border-bottom: 1px solid var(--border-muted); }
+        .md h3 { font-size: 14px; }
+        .md p { margin: 0 0 12px; color: var(--fg-default); }
+        .md ul, .md ol { margin: 0 0 12px; padding-left: 24px; }
+        .md li { margin-bottom: 4px; }
+        .md li::marker { color: var(--fg-subtle); }
+        .md a { color: var(--accent); text-decoration: none; }
+        .md a:hover { text-decoration: underline; }
+        .md strong { font-weight: 700; color: var(--fg-default); }
+        .md hr { display: none; }
+
+        .md code {
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            background-color: var(--neutral-muted);
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        }
+        .md pre {
+            padding: 16px;
+            overflow: auto;
+            background-color: var(--canvas-subtle);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-muted);
+        }
+        .md pre code { background: transparent; padding: 0; }
+        .md blockquote {
+            margin: 0 0 12px;
+            padding: 0 1em;
+            color: var(--fg-muted);
+            border-left: 3px solid var(--accent);
+        }
+        .md table { border-collapse: collapse; width: 100%; margin-bottom: 12px; display: block; overflow-x: auto; }
+        .md th, .md td { padding: 6px 13px; border: 1px solid var(--border-default); }
+        .md th { background-color: var(--canvas-subtle); font-weight: 600; }
+
+        /* File browser */
+        .file-browser { border: 1px solid var(--border-default); border-radius: var(--radius); overflow: hidden; }
+        .file-browser-head {
+            display: flex; align-items: center; gap: 8px;
+            padding: 9px 16px;
+            background-color: var(--canvas-subtle);
+            border-bottom: 1px solid var(--border-default);
+            font-size: 12px; color: var(--fg-subtle);
+        }
+        .file-row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 9px 16px;
+            border-bottom: 1px solid var(--border-muted);
+            font-size: 14px;
+        }
+        .file-row:last-child { border-bottom: 0; }
+        .file-row:hover { background-color: var(--canvas-subtle); }
+        .file-row .ficon { display: flex; flex-shrink: 0; }
+        .file-row .ficon.dir  { color: var(--accent); }
+        .file-row .ficon.file { color: var(--fg-subtle); }
+        .file-row a {
+            color: var(--fg-default);
+            text-decoration: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .file-row a:hover { color: var(--accent); text-decoration: underline; }
+        .file-row.is-dir a { font-weight: 600; }
+        .file-more {
+            margin-left: auto;
+            font-size: 11.5px;
+            color: var(--fg-subtle);
+            background-color: var(--neutral-muted);
+            padding: 1px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
 
         .app-footer {
             border-top: 1px solid var(--border-muted);
             padding: 24px;
             text-align: center;
-            color: var(--fg-muted);
+            color: var(--fg-subtle);
             font-size: 12px;
         }
+        .app-footer a { color: var(--accent); text-decoration: none; }
+        .app-footer a:hover { text-decoration: underline; }
+
+        [hidden] { display: none !important; }
 
         @media (max-width: 640px) {
-            .main { padding: 24px 16px; }
+            .main { padding: 28px 16px; }
             .agent-list { grid-template-columns: 1fr; }
+            .progress-card, .card { padding-left: 4px; padding-right: 4px; }
         }
     </style>
 </head>
 <body>
     <header class="app-header">
         <span class="mark">
-            <svg height="28" viewBox="0 0 16 16" width="28" fill="currentColor" aria-hidden="true">
-                <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27s-1.36.09-2 .27c-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
+            <svg height="17" width="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 1 L14.5 4.8 V11.2 L8 15 L1.5 11.2 V4.8 Z M8 3.1 L3.4 5.8 V10.2 L8 12.9 L12.6 10.2 V5.8 Z"></path>
             </svg>
         </span>
-        <div class="header-title">Repository Documentation</div>
+        <div class="header-title">Repo Insight</div>
         <div class="header-actions">
             <button class="btn btn-icon" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
-                <svg id="theme-icon" height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <svg id="theme-icon" height="15" width="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                     <path d="M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Z"></path>
                 </svg>
+            </button>
+            <button class="btn" id="new-analysis-btn" hidden>
+                <svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 2a.75.75 0 0 1 .75.75v4.5h4.5a.75.75 0 0 1 0 1.5h-4.5v4.5a.75.75 0 0 1-1.5 0v-4.5h-4.5a.75.75 0 0 1 0-1.5h4.5v-4.5A.75.75 0 0 1 8 2Z"></path>
+                </svg>
+                New analysis
             </button>
         </div>
     </header>
 
     <main class="main">
-        <div class="card">
+        <!-- ===== Form view ===== -->
+        <div class="card" id="view-form">
             <div class="card-header">
                 <span class="glyph">
-                    <svg height="28" width="28" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                        <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"></path>
+                    <svg height="26" width="26" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5Zm1.5-.25a.25.25 0 0 0-.25.25v2.5h11.5v-2.5a.25.25 0 0 0-.25-.25Zm11.25 4.25h-11.5v5a.25.25 0 0 0 .25.25h11a.25.25 0 0 0 .25-.25ZM3.5 4.25a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5Zm2.25.75a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0Z"></path>
                     </svg>
                 </span>
-                <h1 class="card-title">Generate documentation</h1>
-                <p class="card-description">Analyze a public GitHub repository with AI agents.</p>
+                <h1 class="card-title">Analyze a repository</h1>
+                <p class="card-description">Point four AI agents at any public repo and get a structured report.</p>
             </div>
 
             <div class="card-body">
-                {% if error %}
-                <div class="flash" role="alert">
+                <div class="flash" role="alert" id="error-flash" hidden>
                     <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                         <path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
                     </svg>
-                    <span>{{ error }}</span>
+                    <span id="error-text"></span>
                 </div>
-                {% endif %}
 
-                <form method="post" action="{% url 'generate_documentation' %}" id="gen-form">
-                    {% csrf_token %}
+                <form id="gen-form">
                     <div class="form-group">
                         <label class="form-label" for="repo_url">Repository URL</label>
                         <div class="input-wrapper">
                             <span class="prefix-icon">
                                 <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                                    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"></path>
+                                    <path d="M8 1 L14.5 4.8 V11.2 L8 15 L1.5 11.2 V4.8 Z"></path>
                                 </svg>
                             </span>
                             <input class="form-input" type="url" id="repo_url" name="repo_url"
@@ -334,7 +600,7 @@
 
                     <button type="submit" class="btn-submit" id="submit-btn">
                         <span class="spinner" id="spinner"></span>
-                        <span id="btn-label">Generate documentation</span>
+                        <span id="btn-label">Analyze repository</span>
                     </button>
                 </form>
 
@@ -342,7 +608,7 @@
                     <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                         <path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path>
                     </svg>
-                    <span>Analysis runs four agents sequentially and typically takes 30&ndash;120 seconds.</span>
+                    <span>Analysis runs four agents in sequence and typically takes 30&ndash;120 seconds.</span>
                 </div>
             </div>
 
@@ -356,14 +622,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- ===== Progress view ===== -->
+        <div class="progress-card" id="view-progress" hidden>
+            <div class="progress-head">
+                <h2>Analyzing <span class="repo-tag" id="progress-repo-tag"></span></h2>
+                <p>Agents run one after another &mdash; this usually takes a minute or two.</p>
+            </div>
+            <div class="steps" id="steps-list"></div>
+            <div class="progress-error" id="progress-error" hidden>
+                <div id="progress-error-text"></div>
+                <button class="btn" id="progress-retry-btn">Try again</button>
+            </div>
+        </div>
+
+        <!-- ===== Results view ===== -->
+        <div class="results-wrap" id="view-results" hidden>
+            <div class="repo-hero">
+                <span class="repo-icon">
+                    <svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5Zm1.5-.25a.25.25 0 0 0-.25.25v2.5h11.5v-2.5a.25.25 0 0 0-.25-.25Zm11.25 4.25h-11.5v5a.25.25 0 0 0 .25.25h11a.25.25 0 0 0 .25-.25Z"></path>
+                    </svg>
+                </span>
+                <div>
+                    <h1 class="repo-name"><a id="hero-link" href="#" target="_blank" rel="noopener noreferrer"></a></h1>
+                    <div class="repo-meta"><span id="hero-meta"></span></div>
+                </div>
+            </div>
+            <div class="tabbar" id="tabbar" role="tablist"></div>
+            <div id="panels"></div>
+        </div>
     </main>
 
     <footer class="app-footer">
-        Powered by CrewAI agents and the GitHub MCP Server
+        Powered by <a href="https://github.com/crewAIInc/crewAI" target="_blank" rel="noopener noreferrer">CrewAI</a>
+        agents and the GitHub MCP Server
     </footer>
 
     <script>
     (function () {
+        // ===================== Theme =====================
         var root = document.documentElement;
         var SUN = 'M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.657-8.157a.75.75 0 0 1 0 1.061l-1.061 1.06a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.193 9.193a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0ZM3 8a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 3 8Zm13 0a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 16 8Zm-8 5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 8 13Zm-5.657-.343a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 0 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.06Zm9.193-9.193a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061l-1.061-1.06a.75.75 0 0 1 0-1.061Z';
         var MOON = 'M9.598 1.591a.749.749 0 0 1 .785-.175 7.001 7.001 0 1 1-8.967 8.967.75.75 0 0 1 .961-.96 5.5 5.5 0 0 0 7.046-7.046.75.75 0 0 1 .175-.786Z';
@@ -374,25 +672,450 @@
             if (icon) icon.innerHTML = '<path d="' + (theme === 'dark' ? MOON : SUN) + '"></path>';
             try { localStorage.setItem('docs-theme', theme); } catch (e) {}
         }
-
         var stored = null;
         try { stored = localStorage.getItem('docs-theme'); } catch (e) {}
         applyTheme(stored || 'dark');
+        document.getElementById('theme-toggle').addEventListener('click', function () {
+            applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
 
-        var toggle = document.getElementById('theme-toggle');
-        if (toggle) {
-            toggle.addEventListener('click', function () {
-                applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        // ===================== View switching =====================
+        var viewForm = document.getElementById('view-form');
+        var viewProgress = document.getElementById('view-progress');
+        var viewResults = document.getElementById('view-results');
+        var newAnalysisBtn = document.getElementById('new-analysis-btn');
+
+        function showView(name) {
+            viewForm.hidden = name !== 'form';
+            viewProgress.hidden = name !== 'progress';
+            viewResults.hidden = name !== 'results';
+            newAnalysisBtn.hidden = name === 'form';
+        }
+
+        newAnalysisBtn.addEventListener('click', function () {
+            showView('form');
+            document.getElementById('error-flash').hidden = true;
+        });
+
+        // ===================== Step list =====================
+        var STEP_META = {
+            structure: { dotClass: 'dot-structure' },
+            issues:    { dotClass: 'dot-issues' },
+            pulls:     { dotClass: 'dot-pulls' },
+            branches:  { dotClass: 'dot-branches' }
+        };
+
+        function renderSteps(steps) {
+            var list = document.getElementById('steps-list');
+            list.innerHTML = '';
+            steps.forEach(function (step) {
+                var row = document.createElement('div');
+                row.className = 'step' + (step.status === 'done' ? ' is-done' : step.status === 'running' ? ' is-running' : '');
+                var icon = step.status === 'done'
+                    ? '<svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg>'
+                    : '';
+                row.innerHTML =
+                    '<span class="step-icon">' + icon + '</span>' +
+                    '<span class="step-label">' + step.label + '</span>' +
+                    '<span class="step-status">' + (step.status === 'done' ? 'Done' : step.status === 'running' ? 'Running' : 'Waiting') + '</span>';
+                list.appendChild(row);
             });
         }
 
-        // Loading state: the request legitimately takes 30-120s.
-        var form = document.getElementById('gen-form');
-        if (form) {
-            form.addEventListener('submit', function () {
-                document.getElementById('submit-btn').disabled = true;
-                document.getElementById('spinner').style.display = 'block';
-                document.getElementById('btn-label').textContent = 'Analyzing repository…';
+        // ===================== Polling =====================
+        var pollTimer = null;
+
+        function stopPolling() {
+            if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+        }
+
+        function pollStatus(jobId, owner, repo) {
+            fetch('/status/' + jobId + '/')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.error && !data.steps) {
+                        showError(data.error);
+                        return;
+                    }
+                    renderSteps(data.steps);
+
+                    if (data.status === 'done') {
+                        stopPolling();
+                        renderResults(data.result_html, owner, repo);
+                        showView('results');
+                    } else if (data.status === 'error') {
+                        stopPolling();
+                        document.getElementById('progress-error-text').textContent = data.error || 'Something went wrong.';
+                        document.getElementById('progress-error').hidden = false;
+                    } else {
+                        pollTimer = setTimeout(function () { pollStatus(jobId, owner, repo); }, 1500);
+                    }
+                })
+                .catch(function () {
+                    pollTimer = setTimeout(function () { pollStatus(jobId, owner, repo); }, 2500);
+                });
+        }
+
+        function showError(message) {
+            stopPolling();
+            showView('form');
+            var flash = document.getElementById('error-flash');
+            document.getElementById('error-text').textContent = message;
+            flash.hidden = false;
+            resetSubmitButton();
+        }
+
+        function resetSubmitButton() {
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('btn-label').textContent = 'Analyze repository';
+        }
+
+        // ===================== Form submit =====================
+        function getCookie(name) {
+            var match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return match ? decodeURIComponent(match.pop()) : '';
+        }
+
+        document.getElementById('gen-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var repoUrl = document.getElementById('repo_url').value.trim();
+            if (!repoUrl) return;
+
+            document.getElementById('error-flash').hidden = true;
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('spinner').style.display = 'block';
+            document.getElementById('btn-label').textContent = 'Starting…';
+
+            var match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+?)(?:\.git|\/)?$/i);
+            var owner = match ? match[1] : '';
+            var repo = match ? match[2] : '';
+
+            var body = new URLSearchParams();
+            body.set('repo_url', repoUrl);
+
+            fetch('/generate/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: body.toString()
+            })
+                .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+                .then(function (res) {
+                    resetSubmitButton();
+                    if (!res.ok || res.data.error) {
+                        showError(res.data.error || 'Failed to start analysis.');
+                        return;
+                    }
+                    document.getElementById('progress-repo-tag').textContent = owner && repo ? (owner + '/' + repo) : 'repository';
+                    document.getElementById('progress-error').hidden = true;
+                    renderSteps([
+                        { key: 'structure', label: 'Repository Structure', status: 'running' },
+                        { key: 'issues', label: 'Issue Analysis', status: 'pending' },
+                        { key: 'pulls', label: 'Pull Requests', status: 'pending' },
+                        { key: 'branches', label: 'Branches', status: 'pending' }
+                    ]);
+                    showView('progress');
+                    pollStatus(res.data.job_id, owner, repo);
+                })
+                .catch(function () {
+                    resetSubmitButton();
+                    showError('Could not reach the server. Please try again.');
+                });
+        });
+
+        document.getElementById('progress-retry-btn').addEventListener('click', function () {
+            showView('form');
+        });
+
+        // ===================== Results rendering =====================
+        // Icon set — deliberately not GitHub's Octicons.
+        var ICONS = {
+            structure: '<path d="M2 3h4l1.5 2H14v8H2Z"></path>',
+            issues:    '<circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.2 M8 10.6v.1" stroke="white" stroke-width="1.3" fill="none" stroke-linecap="round"></path>',
+            pulls:     '<circle cx="4" cy="4" r="1.6"></circle><circle cx="4" cy="12" r="1.6"></circle><circle cx="12" cy="8" r="1.6"></circle><path d="M4 5.6V10.4 M4 6 C4 8 6 9 8 9 C10 9 12 8.6 12 6.6" stroke-width="1.3" fill="none"></path>',
+            branches:  '<circle cx="4" cy="3.5" r="1.6"></circle><circle cx="4" cy="12.5" r="1.6"></circle><circle cx="12" cy="7" r="1.6"></circle><path d="M4 5.1V10.9 M4 6 C4 7.5 5.5 7 8 7 C10 7 12 7.3 12 8.6" stroke-width="1.3" fill="none"></path>',
+            'default': '<path d="M2 3h12v10H2Z"></path>'
+        };
+        var TAB_DOT_CLASS = { structure: 'dot-structure', issues: 'dot-issues', pulls: 'dot-pulls', branches: 'dot-branches', 'default': 'dot-structure' };
+        var TAB_LABEL = { structure: 'Structure', issues: 'Issues', pulls: 'Pull Requests', branches: 'Branches' };
+        // Must match the output_files order in views._run_crew_job.
+        var SECTION_ORDER = ['structure', 'issues', 'pulls', 'branches'];
+
+        function classify(title) {
+            var t = title.toLowerCase();
+            if (t.indexOf('structure') > -1) return 'structure';
+            if (t.indexOf('issue') > -1) return 'issues';
+            if (t.indexOf('pull request') > -1) return 'pulls';
+            if (t.indexOf('branch') > -1) return 'branches';
+            return 'default';
+        }
+
+        // ----- Directory tree parsing (nested <ul>, or ASCII-art tree in a
+        // <pre>/<code> or bare <p>) shared verbatim from the prior implementation.
+        var DIR_ICON  = 'M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z';
+        var FILE_ICON = 'M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z';
+        var MAX_TREE_DEPTH = 1;
+
+        function parseList(ul) {
+            var out = [];
+            Array.prototype.forEach.call(ul.children, function (li) {
+                if (li.tagName !== 'LI') return;
+                var childUl = li.querySelector(':scope > ul');
+                var a = li.querySelector(':scope > a');
+                var label = '';
+                Array.prototype.forEach.call(li.childNodes, function (n) {
+                    if (n.nodeType === 1 && n.tagName === 'UL') return;
+                    label += n.textContent;
+                });
+                label = label.trim().replace(/\s*\(empty\)\s*$/i, '');
+                var href = a ? a.getAttribute('href') : '';
+                var isDir = /\/tree\//.test(href) || /\/$/.test(label) || !!childUl;
+                var name = label.replace(/\/$/, '').trim();
+                if (!name) return;
+                out.push({ name: name, href: href, isDir: isDir, children: childUl ? parseList(childUl) : [] });
+            });
+            return out;
+        }
+
+        function parseAsciiTree(container) {
+            var linkRe = /^\[(.+?)\]\((\S+)\)$/;
+            var root = [];
+            var stack = [{ depth: -1, children: root }];
+            var lines = [[]];
+            Array.prototype.forEach.call(container.childNodes, function (node) {
+                if (node.nodeType === 3) {
+                    var parts = node.textContent.split('\n');
+                    parts.forEach(function (part, i) {
+                        if (i > 0) lines.push([]);
+                        if (part) lines[lines.length - 1].push({ text: part });
+                    });
+                } else if (node.nodeType === 1) {
+                    lines[lines.length - 1].push({ text: node.textContent, href: node.tagName === 'A' ? node.getAttribute('href') : '' });
+                }
+            });
+            lines.forEach(function (parts) {
+                var lineText = parts.map(function (p) { return p.text; }).join('');
+                if (!lineText.trim()) return;
+                var connectorIdx = lineText.search(/[├└]──/);
+                if (connectorIdx === -1) return;
+                var depth = Math.round(connectorIdx / 4);
+                var labelStart = connectorIdx + lineText.slice(connectorIdx).indexOf('──') + 2;
+                var consumed = 0, label = '', href = '';
+                parts.forEach(function (p) {
+                    var partStart = consumed;
+                    consumed += p.text.length;
+                    if (partStart + p.text.length <= labelStart) return;
+                    var text = partStart < labelStart ? p.text.slice(labelStart - partStart) : p.text;
+                    label += text;
+                    if (p.href) href = p.href;
+                });
+                label = label.trim();
+                if (!label) return;
+                var linkMatch = label.match(linkRe);
+                if (linkMatch) { label = linkMatch[1]; href = linkMatch[2]; }
+                var isDir = /\/tree\//.test(href) || /\/$/.test(label);
+                var name = label.replace(/\/$/, '').replace(/\s*\(empty\)\s*$/i, '').trim();
+                if (!name) return;
+                var node = { name: name, href: href, isDir: isDir, children: [] };
+                while (stack.length && stack[stack.length - 1].depth >= depth) stack.pop();
+                stack[stack.length - 1].children.push(node);
+                stack.push({ depth: depth, children: node.children });
+            });
+            return root;
+        }
+
+        function sortEntries(list) {
+            list.sort(function (a, b) {
+                if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            });
+            list.forEach(function (e) { if (e.children.length) sortEntries(e.children); });
+            return list;
+        }
+
+        function countEntries(list, acc) {
+            list.forEach(function (e) { if (e.isDir) acc.dirs++; else acc.files++; countEntries(e.children, acc); });
+            return acc;
+        }
+
+        function renderRows(list, depth, into) {
+            list.forEach(function (e) {
+                var row = document.createElement('div');
+                row.className = 'file-row' + (e.isDir ? ' is-dir' : '');
+                row.style.paddingLeft = (16 + depth * 20) + 'px';
+                var label = e.href
+                    ? '<a href="' + e.href + '" target="_blank" rel="noopener noreferrer">' + e.name + '</a>'
+                    : '<span>' + e.name + '</span>';
+                // Past the depth cap, summarise the hidden contents on the folder
+                // row itself rather than adding a near-empty "..." row per folder.
+                var hidden = '';
+                if (e.children.length && depth + 1 >= MAX_TREE_DEPTH) {
+                    var inner = countEntries(e.children, { dirs: 0, files: 0 });
+                    var total = inner.dirs + inner.files;
+                    hidden = '<span class="file-more">' + total + (total === 1 ? ' item' : ' items') + '</span>';
+                }
+                row.innerHTML =
+                    '<span class="ficon ' + (e.isDir ? 'dir' : 'file') + '">' +
+                    '<svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="' + (e.isDir ? DIR_ICON : FILE_ICON) + '"></path></svg></span>' + label + hidden;
+                into.appendChild(row);
+                if (e.children.length && depth + 1 < MAX_TREE_DEPTH) {
+                    renderRows(e.children, depth + 1, into);
+                }
+            });
+        }
+
+        function buildFileBrowser(source) {
+            var tree = source.tagName === 'UL' ? sortEntries(parseList(source)) : sortEntries(parseAsciiTree(source));
+            if (!tree.length) return null;
+            var counts = countEntries(tree, { dirs: 0, files: 0 });
+            var wrap = document.createElement('div');
+            wrap.className = 'file-browser';
+            var head = document.createElement('div');
+            head.className = 'file-browser-head';
+            head.innerHTML =
+                '<svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="' + DIR_ICON + '"></path></svg>' +
+                '<span>' + counts.dirs + ' ' + (counts.dirs === 1 ? 'folder' : 'folders') + ' · ' + counts.files + ' ' + (counts.files === 1 ? 'file' : 'files') + '</span>';
+            wrap.appendChild(head);
+            renderRows(tree, 0, wrap);
+            return wrap;
+        }
+
+        // ----- Split combined HTML on <hr> into sections, mount as tabs -----
+        function renderResults(documentationHtml, owner, repo) {
+            var source = document.createElement('div');
+            source.innerHTML = documentationHtml;
+
+            // combine_markdown_files emits "<!--SECTION:key-->" before each
+            // report. Agents vary heading levels and add their own "---" rules,
+            // so those markers are the only dependable boundary.
+            var nodes = Array.prototype.slice.call(source.childNodes);
+            var groups = [];
+            var groupKeys = [];
+            var current = [];
+            var currentKey = null;   // null until the first marker (preamble)
+            var sawMarker = false;
+            function flush() {
+                if (current.length) { groups.push(current); groupKeys.push(currentKey); }
+                current = [];
+            }
+            nodes.forEach(function (node) {
+                var marker = node.nodeType === 8 && /^\s*SECTION:(\S+?)\s*$/.exec(node.nodeValue || '');
+                if (marker) {
+                    sawMarker = true;
+                    flush();
+                    currentKey = marker[1];
+                } else if (node.nodeType === 1 && node.tagName === 'HR') {
+                    // Drop separators; they carry no content of their own.
+                } else {
+                    current.push(node);
+                }
+            });
+            flush();
+
+            // Without markers (older output), fall back to splitting on <h1>.
+            if (!sawMarker) {
+                groups = [];
+                groupKeys = [];
+                current = [];
+                nodes.forEach(function (node) {
+                    if (node.nodeType === 1 && node.tagName === 'H1') {
+                        if (current.length) { groups.push(current); groupKeys.push(null); }
+                        current = [node];
+                    } else if (node.nodeType === 1 && node.tagName === 'HR') {
+                        // skip
+                    } else {
+                        current.push(node);
+                    }
+                });
+                if (current.length) { groups.push(current); groupKeys.push(null); }
+            }
+
+            var keptGroups = [];
+            var keptKeys = [];
+            groups.forEach(function (g, i) {
+                if (g.some(function (n) { return (n.textContent || '').trim().length > 0; })) {
+                    keptGroups.push(g);
+                    keptKeys.push(groupKeys[i]);
+                }
+            });
+            groups = keptGroups;
+            groupKeys = keptKeys;
+
+            // Content before the first marker is just the "Summary for x/y"
+            // heading, which becomes the hero rather than a tab.
+            var heroTitle = owner && repo ? (owner + '/' + repo) : '';
+            if (sawMarker && groupKeys[0] === null) {
+                var preamble = groups.shift();
+                groupKeys.shift();
+                if (!heroTitle) {
+                    var h = preamble.filter(function (n) { return n.nodeType === 1 && n.tagName === 'H1'; })[0];
+                    if (h) heroTitle = h.textContent.replace(/^Summary for\s*/i, '').trim();
+                }
+            } else if (!sawMarker) {
+                var firstGroup = groups[0] || [];
+                var firstHeading = firstGroup.filter(function (n) { return n.nodeType === 1 && n.tagName === 'H1'; })[0];
+                if (firstHeading) {
+                    if (!heroTitle) heroTitle = firstHeading.textContent.replace(/^Summary for\s*/i, '').trim();
+                    firstGroup = firstGroup.filter(function (n) { return n !== firstHeading; });
+                    groups[0] = firstGroup;
+                    if (!firstGroup.some(function (n) { return (n.textContent || '').trim().length; })) groups.shift();
+                }
+            }
+
+            document.getElementById('hero-link').textContent = heroTitle;
+            document.getElementById('hero-link').href = 'https://github.com/' + heroTitle;
+            document.getElementById('hero-meta').textContent = groups.length + ' report' + (groups.length === 1 ? '' : 's') + ' · analyzed by CrewAI agents';
+
+            var tabbar = document.getElementById('tabbar');
+            var panels = document.getElementById('panels');
+            tabbar.innerHTML = '';
+            panels.innerHTML = '';
+
+            groups.forEach(function (group, index) {
+                var heading = group.filter(function (n) { return n.nodeType === 1 && /^H[12]$/.test(n.tagName); })[0];
+                var title = heading ? heading.textContent.trim() : '';
+                // combine_markdown_files always concatenates the reports in this
+                // order, and agents sometimes mislabel their own heading (the PR
+                // agent has titled its report "GitHub Issue Analysis"), so trust
+                // position over the heading text.
+                var kind = groupKeys[index] || SECTION_ORDER[index] || classify(title);
+                var shortTitle = TAB_LABEL[kind] ||
+                    title.replace(/[\s:]+for\s+\S+\/\S+\s*$/i, '').replace(/\s*:\s*\S+\/\S+\s*$/, '').trim() ||
+                    'Report';
+
+                var tab = document.createElement('button');
+                tab.className = 'tab' + (index === 0 ? ' active' : '');
+                tab.setAttribute('role', 'tab');
+                tab.innerHTML = '<span class="tab-dot ' + TAB_DOT_CLASS[kind] + '"></span>' + shortTitle;
+
+                var panel = document.createElement('div');
+                panel.className = 'panel md';
+                panel.hidden = index !== 0;
+                group.forEach(function (n) { if (n !== heading) panel.appendChild(n); });
+
+                if (kind === 'structure') {
+                    var treeSource = panel.querySelector('ul') ||
+                        panel.querySelector('pre code, pre') ||
+                        Array.prototype.filter.call(panel.querySelectorAll('p'), function (p) { return /[├└]──/.test(p.textContent); })[0];
+                    if (treeSource) {
+                        var browser = buildFileBrowser(treeSource);
+                        var target = treeSource.closest('pre') || treeSource;
+                        if (browser) target.parentNode.replaceChild(browser, target);
+                    }
+                }
+
+                tab.addEventListener('click', function () {
+                    Array.prototype.forEach.call(tabbar.children, function (t) { t.classList.remove('active'); });
+                    Array.prototype.forEach.call(panels.children, function (p) { p.hidden = true; });
+                    tab.classList.add('active');
+                    panel.hidden = false;
+                });
+
+                tabbar.appendChild(tab);
+                panels.appendChild(panel);
             });
         }
     })();

@@ -15,7 +15,7 @@ GENERATED_DOCS_DIR = "generated_docs"
 
 
 # Analyze Repository
-def analyze_repo_structure_task(owner: str, repo: str):
+def analyze_repo_structure_task(owner: str, repo: str, on_done=None):
     return [
         Task(
             description = (
@@ -33,11 +33,12 @@ def analyze_repo_structure_task(owner: str, repo: str):
             tools = [get_repo_files],
             output_file = os.path.join(GENERATED_DOCS_DIR, "repo_structure.md"),
             create_directory = True,
-            verbose = True
+            verbose = True,
+            callback = on_done,
         )
     ]
 
-def get_issue_tasks(owner: str, repo: str):
+def get_issue_tasks(owner: str, repo: str, on_done=None):
     fetch_issue_task = Task(
         description = (
             f"Use the 'get_issue' tool to fetch a list of all open issues from the {owner}/{repo} repository. "
@@ -54,23 +55,34 @@ def get_issue_tasks(owner: str, repo: str):
         tools = [get_issue],
         output_file = os.path.join(GENERATED_DOCS_DIR, "report_issues.md"),
         create_directory = True,
-        verbose = True
+        verbose = True,
+        callback = on_done,
     )
     return [fetch_issue_task]
 
-def list_pull_requests_tasks(owner: str, repo: str):
+def list_pull_requests_tasks(owner: str, repo: str, on_done=None):
     fetch_pull_request_task = Task(
-        description = f"Fetch a list of 5 most recently created pull requests for the {owner}/{repo} repository using the 'get_pull_requests' tool. Analyze the provided lists to identify key themes, active discussions, and potential areas of focus.",
-        expected_output = f"A Markdown-formatted summary of the repository's pull requests. Provide a concise and categorical summary of the requests and your feedback for it.",
+        description = (
+            f"Fetch a list of 5 most recently created pull requests for the {owner}/{repo} repository "
+            "using the 'get_pull_requests' tool. Analyze the provided list to identify key themes, "
+            "active discussions, and potential areas of focus. Report ONLY on pull requests returned "
+            "by the tool - do not include or discuss issues."
+        ),
+        expected_output = (
+            "A Markdown-formatted summary of the repository's pull requests, starting with a level-1 "
+            "heading that says 'Pull Request Report'. Provide a concise and categorical summary of the "
+            "pull requests and your feedback. Cover pull requests only, not issues."
+        ),
         agent = pull_requests_fetcher_reporter,
         tools = [get_pull_requests],
         output_file = os.path.join(GENERATED_DOCS_DIR, "pull_requests.md"),
         create_directory = True,
-        verbose = True
+        verbose = True,
+        callback = on_done,
     )
-    return [fetch_pull_request_task] 
+    return [fetch_pull_request_task]
 
-def list_branches_tasks(owner: str, repo: str):
+def list_branches_tasks(owner: str, repo: str, on_done=None):
     list_branches_task = Task(
         description = f"Fetch a list of 5 branches created from the {owner}/{repo} repository using the 'get_repo_branches' tool. Analyze the provided lists to identify key themes, active discussions, and potential areas of focus.",
         expected_output = f"A Markdown-formatted summary of the repository's branches. Provide a concise and categorical summary of the requests and your feedback for it.",
@@ -78,6 +90,7 @@ def list_branches_tasks(owner: str, repo: str):
         tools = [get_repo_branches],
         output_file = os.path.join(GENERATED_DOCS_DIR, "branches.md"),
         create_directory = True,
-        verbose = True
+        verbose = True,
+        callback = on_done,
     )
     return [list_branches_task]
